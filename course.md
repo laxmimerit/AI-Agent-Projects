@@ -26,7 +26,7 @@
 - Context Engineering
 
 ### AI Projects
-- Host Agent with Open WebUI / Chat Agent UI
+- Host Agent with Langchain's Chat Agent UI
     - Design FastAPI endpoints for invoke and stream responses 
 
 - Youtube Video Analyzer
