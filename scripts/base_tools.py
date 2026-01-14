@@ -8,6 +8,7 @@ import requests
 # -------------------------
 # Web Search Tool
 # -------------------------
+# @tool('live_web_search', description='Perform live search using Ollama.')
 @tool
 def web_search(query: str):
     """
