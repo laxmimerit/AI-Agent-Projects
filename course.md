@@ -45,16 +45,11 @@
     - Summarizes unread emails (Gmail)
     - Shows top news headlines (Ollama Search)
 
-- API Builder Agent
-    - Takes sample notebook. clean it and place it inside working api blocks
-    
-    - Build unit test script to make sure it is working.
-
 - Host Agent with Langchain's Chat Agent UI
     - Create structured prompt with powerful model to follow pre-defined structure
     - Allow Google search gounding
 
-- Design FastAPI endpoints for invoke and stream responses 
+- Design and Deploy FastAPI endpoints for invoke and stream responses 
     - Basic end point design
     - Add Agent streaming endpoint
     - Add documents support
@@ -63,21 +58,14 @@
     - Langchain + Livekit
 
 ### Real-World Projects
-- E-Commerce Campaign Builder
+- Amazon E-Commerce Campaign Builder
     - Use mailchimp to send emailers based on user prefs and orders
     - Approval Agent (human approval before sending)
     - Monitoring / Logging Agent
 
-- E-Commerce Customer Support Agent
+- Amazon E-Commerce Customer Support Agent
     - Understand customer intent (refund, status, cancellation)
     - Query real-time order data via safe SQL tools
     - Apply business rules for refunds/cancellations
     - Use chat history for continuity (no repetition)
     - Escalate to humans when confidence is low
-
-- E-Commerce Operational Metrics Explainer
-    - Analyze the metrics
-    - Build Graph
-    - Find out inconsistencies
-    - Analyze time-series data
-    - Use graph builder MCP
