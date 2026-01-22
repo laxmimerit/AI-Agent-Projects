@@ -1,12 +1,4 @@
-"""Simple Airbnb MCP module."""
-######## MCP SETUP ###############
-# MCP GITHUB
-# https://github.com/laxmimerit/MCP-Mastery-with-Claude-and-Langchain
-# https://github.com/laxmimerit/Agentic-RAG-with-LangGraph-and-Ollama
-
-# https://github.com/langchain-ai/langchain-mcp-adapters
-
-# Add scripts directory to system path
+"""Airbnb MCP Server."""
 import sys
 import os
 
@@ -32,16 +24,16 @@ if sys.platform == 'win32':
 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
 system_prompt = """
-                You are a travel planning assistant.
+You are a travel planning assistant.
 
-                Instructions:
-                - Search Airbnb listings immediately when user asks for accommodations
-                - Use defaults: adults=2, no dates if not specified
-                - Present top 5 results with link: https://www.airbnb.com/rooms/{listing_id}
-                - Use web_search for attractions, events, or travel info
-                - Use get_weather to check destination weather
-                - Be proactive, don't ask for details unless search fails
-                """
+Instructions:
+- Search Airbnb listings immediately when user asks for accommodations
+- Use defaults: adults=2, no dates if not specified
+- Present top 5 results with link: https://www.airbnb.com/rooms/{listing_id}
+- Use web_search for attractions, events, or travel info
+- Use get_weather to check destination weather
+- Be proactive, don't ask for details unless search fails
+"""
 
 async def get_tools():
     client = MultiServerMCPClient(
@@ -55,8 +47,6 @@ async def get_tools():
     )
 
     mcp_tools = await client.get_tools()
-
-    # Combine MCP tools with base_tools
     all_tools = mcp_tools + [base_tools.web_search, base_tools.get_weather]
 
     print(f"Loaded {len(all_tools)} Tools")
