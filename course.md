@@ -28,7 +28,7 @@
 ### AI Projects
 - Travel Planning Agent
     - Search web-search and weather tool
-    - Find hotels (AirBNB/Booking API)
+    - Find hotels (AirBNB API)
     - Create itinerary in Google Sheets
     - Add trip events to Google Calendar
 
