@@ -13,7 +13,7 @@ load_dotenv()
 
 from scripts import base_tools
 
-from langchain.messages import HumanMessage, AIMessage
+from langchain.messages import HumanMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
