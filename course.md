@@ -26,9 +26,13 @@
 - Context Engineering
 
 ### AI Projects
+- Airbnb Hotel Search with MCP
+    - Introduce MCP
+    - Introduce Airbnb mcp code
+
 - Travel Planning Agent
     - Search web-search and weather tool
-    - Find hotels (AirBNB API)
+    - Find hotels (Airbnb API)
     - Create itinerary in Google Sheets
     - Add trip events to Google Calendar
 

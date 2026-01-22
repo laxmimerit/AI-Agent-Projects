@@ -29,19 +29,24 @@ import asyncio
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
 
-model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+model = ChatGoogleGenerativeAI(model="gemini-3-flash-preview")
 
 system_prompt = """
-                You are a travel planning assistant.
+You are a travel planning assistant with access to multiple tools.
 
-                Instructions:
-                - Search Airbnb listings immediately when user asks for accommodations
-                - Use defaults: adults=2, no dates if not specified
-                - Present top 5 results with link: https://www.airbnb.com/rooms/{listing_id}
-                - Use web_search for attractions, events, or travel info
-                - Use get_weather to check destination weather
-                - Be proactive, don't ask for details unless search fails
-                """
+Tasks you can perform:
+- Search Airbnb listings (defaults: adults=2, no dates if not specified)
+- Get weather information for destinations
+- Search web for attractions, events, travel info
+- Create trip itineraries in Google Sheets
+- Add trip events to Google Calendar
+
+Instructions:
+- Be proactive, search immediately when asked
+- Present Airbnb results with links: https://www.airbnb.com/rooms/{listing_id}
+- Create structured itineraries in Google Sheets with dates, activities, costs
+- Add travel events to Google Calendar with proper times and locations
+"""
 
 async def get_tools():
     client = MultiServerMCPClient(
@@ -50,17 +55,31 @@ async def get_tools():
                 "command": "npx",
                 "args": ["-y", "@openbnb/mcp-server-airbnb", "--ignore-robots-txt"],
                 "transport": "stdio"
+            },
+            "google-calendar": {
+                "command": "npx",
+                "args": ["@cocal/google-calendar-mcp"],
+                "env": {
+                    "GOOGLE_OAUTH_CREDENTIALS": "C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json"
+                },
+                "transport": "stdio"
+            },
+            "google-sheets": {
+                "command": "uvx",
+                "args": ["mcp-google-sheets@latest"],
+                "env": {
+                    "CREDENTIALS_PATH": "C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json",
+                    "TOKEN_PATH": "C:\\Users\\laxmi\\.gmail-mcp\\token.json"
+                },
+                "transport": "stdio"
             }
         }
     )
 
     mcp_tools = await client.get_tools()
-
-    # Combine MCP tools with base_tools
     all_tools = mcp_tools + [base_tools.web_search, base_tools.get_weather]
 
     print(f"Loaded {len(all_tools)} Tools")
-    print(f"Tools Available: {all_tools}")
 
     return all_tools
 
@@ -75,5 +94,5 @@ async def hotel_search(query):
     return response
 
 if __name__=="__main__":
-    query = "Show me hotels for a party in Mumbai also check weather."
+    query = "Plan a 3-day trip to Mumbai. Find hotels, check weather, create itinerary in Google Sheets and add events to Calendar."
     asyncio.run(hotel_search(query))

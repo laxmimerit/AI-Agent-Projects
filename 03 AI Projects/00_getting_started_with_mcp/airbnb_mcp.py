@@ -21,7 +21,7 @@ import asyncio
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
 
-model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+model = ChatGoogleGenerativeAI(model="gemini-3-flash-preview")
 
 system_prompt = """
 You are a travel planning assistant.
