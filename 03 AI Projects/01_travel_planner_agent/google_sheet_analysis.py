@@ -15,9 +15,6 @@ from langchain_core.messages import HumanMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
-from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field
-from typing import Any, Optional
 
 import asyncio
 
@@ -25,20 +22,20 @@ import asyncio
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
 
-model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0,
+    convert_system_message_to_human=True  # Some models need this for tool calling
+)
 
-system_prompt = """
-You are a Google Sheets assistant with access to Google Sheets tools.
+system_prompt = """You are a helpful Google Sheets assistant.
 
-Your task is to help users work with Google Sheets by:
-- Listing available spreadsheets
-- Reading data from sheets
-- Creating new spreadsheets
-- Updating cell values
-- Analyzing sheet data
+You have access to Google Sheets tools. When the user asks about spreadsheets:
+- Use the list_spreadsheets tool to list all spreadsheets
+- Use get_sheet_data to read sheet data
+- Use create_spreadsheet to create new sheets
 
-Be proactive and execute tasks immediately when requested.
-"""
+IMPORTANT: You MUST use the available tools to complete user requests. Do not try to answer without using tools."""
 
 async def get_sheets_tools():
     """Load only Google Sheets MCP tools."""
@@ -90,10 +87,23 @@ async def test_sheets(query):
             agent.ainvoke({"messages": [HumanMessage(content=query)]}),
             timeout=120.0
         )
-        print("Agent completed!")
+        print("Agent completed!\n")
 
-        response = result['messages'][-1].content
-        print("\nResponse:")
+        # Extract the AI's final response from messages
+        messages = result['messages']
+
+        # Find all AI messages with content
+        ai_messages = [
+            str(msg.content)
+            for msg in messages
+            if hasattr(msg, 'type') and msg.type == 'ai' and
+               hasattr(msg, 'content') and msg.content and len(str(msg.content).strip()) > 0
+        ]
+
+        # Get the last AI message (this is the final response after tool use)
+        response = ai_messages[-1] if ai_messages else "No response generated"
+
+        print("Response:")
         print(response)
 
         return response
