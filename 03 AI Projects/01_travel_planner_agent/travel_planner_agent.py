@@ -6,6 +6,9 @@
 
 # https://github.com/langchain-ai/langchain-mcp-adapters
 
+import warnings
+warnings.filterwarnings('ignore')
+
 # Add scripts directory to system path
 import sys
 import os
@@ -24,6 +27,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
 
 import asyncio
+from datetime import datetime, timedelta
 
 # Set UTF-8 encoding for Windows console
 if sys.platform == 'win32':
@@ -31,20 +35,39 @@ if sys.platform == 'win32':
 
 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
-system_prompt = """
+def get_system_prompt():
+    """Generate system prompt with current date context."""
+    today = datetime.now()
+
+    # Default: 5-day trip starting from today
+    checkin_date = today
+    checkout_date = today + timedelta(days=5)
+
+    return f"""
 You are a travel planning assistant with access to multiple tools.
 
+CURRENT DATE CONTEXT:
+- Today's date: {today.strftime('%Y-%m-%d (%A)')}
+- Default check-in: {checkin_date.strftime('%Y-%m-%d')}
+- Default checkout (5 days later): {checkout_date.strftime('%Y-%m-%d')}
+
 Tasks you can perform:
-- Search Airbnb listings (defaults: adults=2, no dates if not specified)
+- Search Airbnb listings (defaults: adults=2, use dates from context or user request)
 - Get weather information for destinations
 - Search web for attractions, events, travel info
-- Create trip itineraries in Google Sheets
 - Add trip events to Google Calendar
+
+Default trip settings:
+- Trip duration: 5 days (can be adjusted based on user request)
+- Default: 2 adults
+- Do NOT apply price filters unless explicitly requested by user
 
 Instructions:
 - Be proactive, search immediately when asked
-- Present Airbnb results with links: https://www.airbnb.com/rooms/{listing_id}
-- Create structured itineraries in Google Sheets with dates, activities, costs
+- Use dates from user query if specified, otherwise use default dates from context
+- Present Airbnb results with links: https://www.airbnb.com/rooms/{{listing_id}}
+- Include pricing information and ratings
+- Show a variety of options at different price points
 - Add travel events to Google Calendar with proper times and locations
 """
 
@@ -87,6 +110,10 @@ async def hotel_search(query):
     tools = await get_tools()
     print(f"Creating agent with {len(tools)} tools...")
 
+    # Get system prompt with current date context
+    system_prompt = get_system_prompt()
+    print(f"\n{system_prompt}\n")
+
     # Create agent using langchain.agents.create_agent
     agent = create_agent(model=model, tools=tools, system_prompt=system_prompt)
 
@@ -117,8 +144,6 @@ async def hotel_search(query):
         return f"Error: {str(e)}"
 
 if __name__=="__main__":
-    # Start with a simple test query
-    query = "What's the weather in Mumbai?"
-    # Complex query (uncomment when simple query works):
-    query = "Plan a 3-day trip to Mumbai. Find hotels, check weather, create itinerary add events to Calendar."
+    # Updated query - removed "budget-friendly" to avoid restrictive price filters
+    query = "Plan a romantic 5-day trip to Mumbai. Find romantic hotels for 2 adults, check weather, and add key events to my Google Calendar."
     asyncio.run(hotel_search(query))
