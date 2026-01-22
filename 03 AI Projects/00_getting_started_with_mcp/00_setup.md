@@ -7,3 +7,14 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 # pip install uv
 
 
+(ml) PS C:\Users\laxmi\Downloads> $env:GOOGLE_OAUTH_CREDENTIALS="C:\Users\laxmi\.gmail-mcp\gcp-oauth.keys.json"
+(ml) PS C:\Users\laxmi\Downloads> npx @cocal/google-calendar-mcp
+No token file found at: C:\Users\laxmi\.config\google-calendar-mcp\tokens.json
+⚠️  No authenticated accounts found.
+Use the 'add-account' tool to authenticate a Google account, or run:
+  npx @cocal/google-calendar-mcp auth
+
+
+
+  
+

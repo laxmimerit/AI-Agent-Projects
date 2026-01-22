@@ -144,6 +144,7 @@ async def hotel_search(query):
         return f"Error: {str(e)}"
 
 if __name__=="__main__":
-    # Updated query - removed "budget-friendly" to avoid restrictive price filters
-    query = "Plan a romantic 5-day trip to Mumbai. Find romantic hotels for 2 adults, check weather, and add key events to my Google Calendar."
+    # Full travel planning query (uncomment to test full flow):
+    query = "Plan a romantic 5-day trip to Mumbai. Find romantic hotels for 2 adults, check weather, and you must add the trip to my primary Google Calendar."
+
     asyncio.run(hotel_search(query))
