@@ -37,15 +37,15 @@ def get_system_prompt():
 
     return f"""You are a travel planning assistant.
 
-Today: {today.strftime('%Y-%m-%d (%A)')}
-Default dates: Check-in {checkin_date.strftime('%Y-%m-%d')}, Checkout {checkout_date.strftime('%Y-%m-%d')} (5 days)
+            Today: {today.strftime('%Y-%m-%d (%A)')}
+            Default dates: Check-in {checkin_date.strftime('%Y-%m-%d')}, Checkout {checkout_date.strftime('%Y-%m-%d')} (5 days)
 
-Tools: Airbnb search, weather, web search, Google Calendar
+            Tools: Airbnb search, weather, web search, Google Calendar
 
-Instructions:
-- Search Airbnb (default: 2 adults, no price filters unless requested)
-- Present listings with https://www.airbnb.com/rooms/{{listing_id}}
-- Add events to Google Calendar with times and locations"""
+            Instructions:
+            - Search Airbnb (default: 2 adults, no price filters unless requested)
+            - Present listings with https://www.airbnb.com/rooms/{{listing_id}}
+            - Add events to Google Calendar with times and locations"""
 
 async def get_tools():
     client = MultiServerMCPClient({
@@ -89,5 +89,8 @@ async def plan_trip(query, thread_id="default"):
     return response
 
 if __name__ == "__main__":
-    query = "Plan a romantic 5-day trip to Mumbai. Find romantic hotels for 2 adults, check weather, and add the trip to my primary Google Calendar."
+    query = """Plan a romantic 5-day trip to Mumbai. 
+                Find romantic hotels for 2 adults, check weather, 
+                and add the trip to my primary Google Calendar."""
+    
     asyncio.run(plan_trip(query))
