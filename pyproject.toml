@@ -74,3 +74,8 @@ dependencies = [
     "xmltodict>=1.0.2",
     "youtube-transcript-api>=1.0.3",
 ]
+
+[tool.uv.workspace]
+members = [
+    "03 AI Projects/ai-agents",
+]
