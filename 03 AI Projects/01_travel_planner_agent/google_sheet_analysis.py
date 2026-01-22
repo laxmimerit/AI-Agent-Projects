@@ -11,7 +11,7 @@ sys.path.append(root_dir)
 from dotenv import load_dotenv
 load_dotenv()
 
-from langchain_core.messages import HumanMessage
+from langchain.messages import HumanMessage, AIMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
@@ -54,71 +54,32 @@ async def get_sheets_tools():
     )
 
     mcp_tools = await client.get_tools()
+    print(f"Loaded {len(mcp_tools)} Google Sheets tools\n")
 
-    print(f"Loaded {len(mcp_tools)} Google Sheets Tools")
-    print("\nAvailable tools:")
-
-    # Filter to only include safe tools that work with Gemini
-    safe_tools = []
+    # Filter tools that work with Gemini
     problematic_tools = ['update_cells', 'batch_update_cells', 'get_multiple_sheet_data',
                         'get_multiple_spreadsheet_summary', 'batch_update']
 
-    for tool in mcp_tools:
-        if tool.name not in problematic_tools:
-            print(f"  ✓ {tool.name}")
-            safe_tools.append(tool)
-        else:
-            print(f"  ✗ {tool.name} (skipped - complex schema)")
+    safe_tools = [tool for tool in mcp_tools if tool.name not in problematic_tools]
 
     return safe_tools
 
 async def test_sheets(query):
-    print("Getting Google Sheets tools...")
     tools = await get_sheets_tools()
 
-    print(f"\nCreating agent with {len(tools)} tools...")
     agent = create_agent(model=model, tools=tools, system_prompt=system_prompt)
 
-    print("Invoking agent with query...")
-    print(f"Query: {query}\n")
+    result = await agent.ainvoke({"messages": [HumanMessage(content=query)]})
 
-    try:
-        result = await asyncio.wait_for(
-            agent.ainvoke({"messages": [HumanMessage(content=query)]}),
-            timeout=120.0
-        )
-        print("Agent completed!\n")
+    # Extract final AI response
+    messages = result['messages']
+    ai_messages = [msg.text for msg in messages if isinstance(msg, AIMessage) and msg.text]
 
-        # Extract the AI's final response from messages
-        messages = result['messages']
+    response = ai_messages[-1] if ai_messages else "No response generated"
+    print(response)
 
-        # Find all AI messages with content
-        ai_messages = [
-            str(msg.content)
-            for msg in messages
-            if hasattr(msg, 'type') and msg.type == 'ai' and
-               hasattr(msg, 'content') and msg.content and len(str(msg.content).strip()) > 0
-        ]
+    return response
 
-        # Get the last AI message (this is the final response after tool use)
-        response = ai_messages[-1] if ai_messages else "No response generated"
-
-        print("Response:")
-        print(response)
-
-        return response
-
-    except asyncio.TimeoutError:
-        print("ERROR: Agent execution timed out after 2 minutes")
-        return "Execution timed out"
-    except Exception as e:
-        print(f"ERROR: {type(e).__name__}: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return f"Error: {str(e)}"
-
-if __name__=="__main__":
-    # Test query: List available spreadsheets
+if __name__ == "__main__":
     query = "List all my Google Spreadsheets."
-
     asyncio.run(test_sheets(query))
