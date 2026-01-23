@@ -91,3 +91,4 @@ nest_asyncio
 docling[vlm]
 fastembed
 fastembed-gpu
+e2b-code-interpreter

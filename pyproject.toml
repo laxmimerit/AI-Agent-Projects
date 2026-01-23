@@ -14,6 +14,7 @@ dependencies = [
     "docutils>=0.22.4",
     "docx2txt>=0.9",
     "duckduckgo-search>=8.1.1",
+    "e2b-code-interpreter>=2.4.1",
     "email-validator>=2.3.0",
     "evaluate>=0.4.6",
     "faiss-cpu>=1.13.2",
@@ -73,9 +74,4 @@ dependencies = [
     "wikipedia>=1.4.0",
     "xmltodict>=1.0.2",
     "youtube-transcript-api>=1.0.3",
-]
-
-[tool.uv.workspace]
-members = [
-    "03 AI Projects/ai-agents",
 ]
