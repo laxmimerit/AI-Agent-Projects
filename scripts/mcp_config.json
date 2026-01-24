@@ -1,0 +1,29 @@
+{
+  "airbnb": {
+    "command": "npx",
+    "args": ["-y", "@openbnb/mcp-server-airbnb", "--ignore-robots-txt"],
+    "transport": "stdio"
+  },
+  "google-calendar": {
+    "command": "npx",
+    "args": ["@cocal/google-calendar-mcp"],
+    "env": {
+      "GOOGLE_OAUTH_CREDENTIALS": "C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json"
+    },
+    "transport": "stdio"
+  },
+  "google-sheets": {
+    "command": "uvx",
+    "args": ["mcp-google-sheets@latest"],
+    "env": {
+      "CREDENTIALS_PATH": "C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json",
+      "TOKEN_PATH": "C:\\Users\\laxmi\\.gmail-mcp\\token.json"
+    },
+    "transport": "stdio"
+  },
+  "gmail": {
+    "command": "npx",
+    "args": ["@gongrzhe/server-gmail-autoauth-mcp"],
+    "transport": "stdio"
+  }
+}

@@ -44,19 +44,8 @@ def get_system_prompt():
             - Present information in a clear, organized format"""
 
 async def get_tools():
-    client = MultiServerMCPClient({
-        "gmail": {
-            "command": "npx",
-            "args": ["@gongrzhe/server-gmail-autoauth-mcp"],
-            "transport": "stdio"
-        },
-        "google-calendar": {
-            "command": "npx",
-            "args": ["@cocal/google-calendar-mcp"],
-            "env": {"GOOGLE_OAUTH_CREDENTIALS": "C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json"},
-            "transport": "stdio"
-        }
-    })
+    mcp_config = base_tools.load_mcp_config('gmail', 'google-calendar')
+    client = MultiServerMCPClient(mcp_config)
 
     mcp_tools = await client.get_tools()
     all_tools = mcp_tools + [base_tools.web_search, base_tools.get_weather]

@@ -36,15 +36,8 @@ Instructions:
 """
 
 async def get_tools():
-    client = MultiServerMCPClient(
-        {
-            "airbnb": {
-                "command": "npx",
-                "args": ["-y", "@openbnb/mcp-server-airbnb", "--ignore-robots-txt"],
-                "transport": "stdio"
-            }
-        }
-    )
+    mcp_config = base_tools.load_mcp_config('airbnb')
+    client = MultiServerMCPClient(mcp_config)
 
     mcp_tools = await client.get_tools()
     all_tools = mcp_tools + [base_tools.web_search, base_tools.get_weather]

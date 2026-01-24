@@ -11,6 +11,8 @@ sys.path.append(root_dir)
 from dotenv import load_dotenv
 load_dotenv()
 
+from scripts import base_tools
+
 from langchain.messages import HumanMessage, AIMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -39,19 +41,8 @@ IMPORTANT: You MUST use the available tools to complete user requests. Do not tr
 
 async def get_sheets_tools():
     """Load only Google Sheets MCP tools."""
-    client = MultiServerMCPClient(
-        {
-            "google-sheets": {
-                "command": "uvx",
-                "args": ["mcp-google-sheets@latest"],
-                "env": {
-                    "CREDENTIALS_PATH": "C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json",
-                    "TOKEN_PATH": "C:\\Users\\laxmi\\.gmail-mcp\\token.json"
-                },
-                "transport": "stdio"
-            }
-        }
-    )
+    mcp_config = base_tools.load_mcp_config('google-sheets')
+    client = MultiServerMCPClient(mcp_config)
 
     mcp_tools = await client.get_tools()
     print(f"Loaded {len(mcp_tools)} Google Sheets tools\n")
