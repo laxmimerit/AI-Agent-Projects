@@ -21,11 +21,7 @@ import asyncio
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
 
-model = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    temperature=0,
-    convert_system_message_to_human=True  # Some models need this for tool calling
-)
+model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
 async def get_sheets_tools():
     """Load only Google Sheets MCP tools."""
