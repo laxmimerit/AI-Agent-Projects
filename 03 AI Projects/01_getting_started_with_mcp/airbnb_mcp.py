@@ -5,10 +5,7 @@ import os
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from dotenv import load_dotenv
-load_dotenv()
-
-from scripts import base_tools
+from scripts import base_tools, prompts
 
 from langchain_core.messages import HumanMessage
 from langchain.agents import create_agent
@@ -22,18 +19,6 @@ if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
 
 model = ChatGoogleGenerativeAI(model="gemini-3-flash-preview")
-
-system_prompt = """
-You are a travel planning assistant.
-
-Instructions:
-- Search Airbnb listings immediately when user asks for accommodations
-- Use defaults: adults=2, no dates if not specified
-- Present top 5 results with link: https://www.airbnb.com/rooms/{listing_id}
-- Use web_search for attractions, events, or travel info
-- Use get_weather to check destination weather
-- Be proactive, don't ask for details unless search fails
-"""
 
 async def get_tools():
     mcp_config = base_tools.load_mcp_config('airbnb')
@@ -49,10 +34,10 @@ async def get_tools():
 
 async def hotel_search(query):
     tools = await get_tools()
-    agent = create_agent(model=model, tools=tools, system_prompt=system_prompt)
+    agent = create_agent(model=model, tools=tools, system_prompt=prompts.AIRBNB_PROMPT)
     result = await agent.ainvoke({'messages': [HumanMessage(query)]})
 
-    response = result['messages'][-1].content[0]['text']
+    response = result['messages'][-1].text
     print(response)
 
     return response

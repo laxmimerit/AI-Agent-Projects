@@ -1,17 +1,11 @@
 """Google Sheets MCP Test and Analysis."""
-import warnings
-warnings.filterwarnings('ignore')
-
 import sys
 import os
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from dotenv import load_dotenv
-load_dotenv()
-
-from scripts import base_tools
+from scripts import base_tools, prompts
 
 from langchain.messages import HumanMessage, AIMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -29,15 +23,6 @@ model = ChatGoogleGenerativeAI(
     temperature=0,
     convert_system_message_to_human=True  # Some models need this for tool calling
 )
-
-system_prompt = """You are a helpful Google Sheets assistant.
-
-You have access to Google Sheets tools. When the user asks about spreadsheets:
-- Use the list_spreadsheets tool to list all spreadsheets
-- Use get_sheet_data to read sheet data
-- Use create_spreadsheet to create new sheets
-
-IMPORTANT: You MUST use the available tools to complete user requests. Do not try to answer without using tools."""
 
 async def get_sheets_tools():
     """Load only Google Sheets MCP tools."""
@@ -58,7 +43,7 @@ async def get_sheets_tools():
 async def test_sheets(query):
     tools = await get_sheets_tools()
 
-    agent = create_agent(model=model, tools=tools, system_prompt=system_prompt)
+    agent = create_agent(model=model, tools=tools, system_prompt=prompts.GOOGLE_SHEETS_PROMPT)
 
     result = await agent.ainvoke({"messages": [HumanMessage(content=query)]})
 

@@ -1,9 +1,18 @@
 import os
 import json
+import warnings
 
 from langchain.tools import tool
 import ollama
 import requests
+
+from dotenv import load_dotenv
+
+# -------------------------
+# Environment Setup
+# -------------------------
+warnings.filterwarnings('ignore')
+load_dotenv()
 
 # -------------------------
 # MCP Config Loader

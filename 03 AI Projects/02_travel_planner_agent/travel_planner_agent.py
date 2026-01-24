@@ -1,17 +1,11 @@
 """Travel Planner Agent with MCP Tools."""
-import warnings
-warnings.filterwarnings('ignore')
-
 import sys
 import os
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from dotenv import load_dotenv
-load_dotenv()
-
-from scripts import base_tools
+from scripts import base_tools, prompts
 
 from langchain.messages import HumanMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -20,7 +14,6 @@ from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
 
 import asyncio
-from datetime import datetime, timedelta
 
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
@@ -28,24 +21,6 @@ if sys.platform == 'win32':
 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
 checkpointer = InMemorySaver()
-
-def get_system_prompt():
-    """Generate system prompt with current date context."""
-    today = datetime.now()
-    checkin_date = today
-    checkout_date = today + timedelta(days=5)
-
-    return f"""You are a travel planning assistant.
-
-            Today: {today.strftime('%Y-%m-%d (%A)')}
-            Default dates: Check-in {checkin_date.strftime('%Y-%m-%d')}, Checkout {checkout_date.strftime('%Y-%m-%d')} (5 days)
-
-            Tools: Airbnb search, weather, web search, Google Calendar
-
-            Instructions:
-            - Search Airbnb (default: 2 adults, no price filters unless requested)
-            - Present listings with https://www.airbnb.com/rooms/{{listing_id}}
-            - Add events to Google Calendar with times and locations"""
 
 async def get_tools():
     mcp_config = base_tools.load_mcp_config('airbnb', 'google-calendar')
@@ -59,7 +34,7 @@ async def get_tools():
 
 async def plan_trip(query, thread_id="default"):
     tools = await get_tools()
-    system_prompt = get_system_prompt()
+    system_prompt = prompts.get_travel_planner_prompt()
 
     agent = create_agent(
         model=model,

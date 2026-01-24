@@ -1,17 +1,12 @@
 """Daily Briefing Agent with MCP Tools."""
-import warnings
-warnings.filterwarnings('ignore')
-
 import sys
 import os
 
+print(os.getenv('OLLAMA_API_KEY'))
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from dotenv import load_dotenv
-load_dotenv()
-
-from scripts import base_tools
+from scripts import base_tools, prompts
 
 from langchain.messages import HumanMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -19,29 +14,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
 
 import asyncio
-from datetime import datetime
 
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
 
 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-
-def get_system_prompt():
-    """Generate system prompt with current date context."""
-    today = datetime.now()
-
-    return f"""You are a daily briefing assistant.
-
-            Today: {today.strftime('%Y-%m-%d (%A)')}
-
-            Tools: Gmail, Google Calendar, weather, web search
-
-            Instructions:
-            - Fetch today's weather
-            - Read today's calendar events from Google Calendar
-            - Summarize unread emails from Gmail
-            - Show top news headlines using web search
-            - Present information in a clear, organized format"""
 
 async def get_tools():
     mcp_config = base_tools.load_mcp_config('gmail', 'google-calendar')
@@ -55,7 +32,7 @@ async def get_tools():
 
 async def get_briefing(query=None):
     tools = await get_tools()
-    system_prompt = get_system_prompt()
+    system_prompt = prompts.get_daily_briefing_prompt()
 
     agent = create_agent(
         model=model,
