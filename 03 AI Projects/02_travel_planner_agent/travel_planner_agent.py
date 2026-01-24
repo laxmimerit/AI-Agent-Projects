@@ -5,6 +5,9 @@ import os
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from scripts import base_tools, prompts
 
 from langchain.messages import HumanMessage

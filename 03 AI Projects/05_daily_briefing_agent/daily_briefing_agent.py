@@ -1,8 +1,9 @@
 """Daily Briefing Agent with MCP Tools."""
 import sys
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
-print(os.getenv('OLLAMA_API_KEY'))
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
