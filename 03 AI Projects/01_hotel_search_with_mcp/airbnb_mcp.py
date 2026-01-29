@@ -8,14 +8,13 @@ sys.path.append(root_dir)
 from dotenv import load_dotenv
 load_dotenv()
 
-from scripts import base_tools, prompts
-
 from langchain_core.messages import HumanMessage
 from langchain.agents import create_agent
-from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_google_genai import ChatGoogleGenerativeAI
+from scripts import base_tools, prompts
 
 import asyncio
+from langchain_mcp_adapters.client import MultiServerMCPClient
 
 # Set UTF-8 encoding for Windows console
 if sys.platform == 'win32':
