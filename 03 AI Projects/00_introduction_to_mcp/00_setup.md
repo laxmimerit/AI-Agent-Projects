@@ -2,13 +2,6 @@
 
 Complete setup guide for integrating Airbnb, Google Calendar, Google Sheets, and Gmail MCP servers with AI applications using OAuth authentication.
 
-## Table of Contents
-- [Prerequisites Installation](#prerequisites-installation)
-- [Google Cloud Setup](#google-cloud-setup)
-- [AI Application Configuration](#ai-application-configuration)
-- [First-Time Authentication](#first-time-authentication)
-- [Verification and Testing](#verification-and-testing)
-
 ---
 
 ## Prerequisites Installation
@@ -76,12 +69,12 @@ uvx --version
 
 This is a **one-time setup** for all Google services (Calendar, Sheets, Gmail).
 
-### Step 1: Create Google Cloud Project
+### Step 1: Create Google Cloud Project (Optional)
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Click on the project dropdown (top left)
 3. Click **New Project**
-4. Enter project name: "Claude MCP Integration"
+4. Enter project name: "AI Agent MCP Integration"
 5. Click **Create**
 6. Wait for project creation and select it
 
@@ -113,20 +106,6 @@ For each API:
    - **Developer contact email:** Your email address
 5. Click **Save and Continue**
 
-#### Add Scopes
-
-1. Click **Add or Remove Scopes**
-2. Add these scopes manually (paste in "Manually add scopes"):
-   ```
-   https://www.googleapis.com/auth/calendar
-   https://www.googleapis.com/auth/calendar.events
-   https://www.googleapis.com/auth/spreadsheets
-   https://mail.google.com/
-   ```
-3. Click **Add to Table**
-4. Click **Update**
-5. Click **Save and Continue**
-
 #### Add Test Users
 
 1. In **Test users** section, click **Add Users**
@@ -139,7 +118,7 @@ For each API:
 1. Go to **APIs & Services > Credentials**
 2. Click **Create Credentials > OAuth client ID**
 3. Select **Application type:** Desktop app
-4. **Name:** Claude Desktop MCP
+4. **Name:** AI Agent App
 5. Click **Create**
 6. Click **Download JSON** (download icon) on the created credential
 7. Click **OK** to close the dialog
@@ -149,10 +128,10 @@ For each API:
 **Windows:**
 1. Create directory:
    ```powershell
-   mkdir C:\Users\laxmi\.gmail-mcp
+   mkdir ~/.gmail-mcp
    ```
 2. Rename downloaded JSON to `gcp-oauth.keys.json`
-3. Move to: `C:\Users\laxmi\.gmail-mcp\gcp-oauth.keys.json`
+3. Move to: `~/.gmail-mcp/gcp-oauth.keys.json`
 
 **macOS/Linux:**
 1. Create directory:
@@ -161,40 +140,6 @@ For each API:
    ```
 2. Rename downloaded JSON to `gcp-oauth.keys.json`
 3. Move to: `~/.gmail-mcp/gcp-oauth.keys.json`
-
----
-
-## Claude Desktop Configuration
-
-These MCP servers can be used with various AI applications that support the Model Context Protocol (MCP), including:
-- Claude Desktop
-- VS Code with Claude extension
-- Cursor
-- Other MCP-compatible AI tools
-
-### Step 1: Locate Config File
-
-The configuration file location depends on your AI application.
-### Step 2: Edit Configuration File
-
-You'll need to add MCP server configurations to your AI application's config file. The exact configuration will depend on your operating system and file paths.
-
-**Key points for configuration:**
-- Use the correct file paths for your operating system
-- Windows paths use double backslashes: `C:\\Users\\...`
-- macOS/Linux paths use forward slashes: `/Users/...`
-- Ensure `GOOGLE_OAUTH_CREDENTIALS` points to your `gcp-oauth.keys.json` file
-- Google Sheets also needs a `TOKEN_PATH` for storing authentication tokens
-
-Refer to the individual MCP server documentation (linked in Resources section at the end of this guide) for specific configuration syntax and options.
-
-### Step 3: Restart Your AI Application
-
-1. **Completely quit** your AI application (not just close the window)
-   - **Windows:** Right-click system tray icon > Quit
-   - **macOS:** Application Menu > Quit
-   - **Linux:** Close application completely
-2. **Restart** the application
 
 ---
 
@@ -207,7 +152,7 @@ After configuring and restarting your AI application, you need to authenticate e
 **Windows:**
 ```powershell
 # Set environment variable (use your actual file path)
-set GOOGLE_OAUTH_CREDENTIALS=C:\Users\laxmi\.gmail-mcp\gcp-oauth.keys.json
+set GOOGLE_OAUTH_CREDENTIALS=~/.gmail-mcp/gcp-oauth.keys.json
 
 # Run authentication
 npx @cocal/google-calendar-mcp auth
@@ -216,7 +161,7 @@ npx @cocal/google-calendar-mcp auth
 **macOS/Linux:**
 ```bash
 # Set environment variable (use your actual file path)
-export GOOGLE_OAUTH_CREDENTIALS="/Users/YOUR_USERNAME/.gmail-mcp/gcp-oauth.keys.json"
+export GOOGLE_OAUTH_CREDENTIALS="~/.gmail-mcp/gcp-oauth.keys.json"
 
 # Run authentication
 npx @cocal/google-calendar-mcp auth
@@ -247,7 +192,7 @@ Google Sheets authentication happens automatically when you first use it in your
 **Windows:**
 ```powershell
 # Create directory if it doesn't exist
-mkdir C:\Users\laxmi\.gmail-mcp
+mkdir ~/.gmail-mcp
 
 # Move your gcp-oauth.keys.json to this folder
 # Then run authentication
@@ -278,46 +223,6 @@ npx @gongrzhe/server-gmail-autoauth-mcp auth
 Airbnb MCP works immediately without authentication for public listing searches.
 
 ---
-
-## File Locations Reference
-
-### Credentials & Tokens
-
-**Windows:**
-- OAuth credentials: `C:\Users\laxmi\.gmail-mcp\gcp-oauth.keys.json`
-- Google Sheets token: `C:\Users\laxmi\.gmail-mcp\token.json`
-- Gmail credentials: `C:\Users\laxmi\.gmail-mcp\credentials.json`
-- Google Calendar tokens: Stored automatically by the MCP server
-
-**macOS:**
-- OAuth credentials: `~/.gmail-mcp/gcp-oauth.keys.json`
-- Google Sheets token: `~/.gmail-mcp/token.json`
-- Gmail credentials: `~/.gmail-mcp/credentials.json`
-- Google Calendar tokens: `~/.config/google-calendar-mcp/tokens.json`
-
-**Linux:**
-- OAuth credentials: `~/.gmail-mcp/gcp-oauth.keys.json`
-- Google Sheets token: `~/.gmail-mcp/token.json`
-- Gmail credentials: `~/.gmail-mcp/credentials.json`
-- Google Calendar tokens: `~/.config/google-calendar-mcp/tokens.json`
-
----
-
-## Security Best Practices
-
-### Protect Your Credentials
-
-- **Never share** `gcp-oauth.keys.json`, `token.json`, or `credentials.json`
-- Add these files to `.gitignore` if using version control
-- Keep credentials outside of public repositories
-- Tokens grant access to your Google account - treat like passwords
-
-### Revoke Access
-
-If you need to revoke access at any time:
-1. Visit [Google Account Permissions](https://myaccount.google.com/permissions)
-2. Find "Claude MCP Integration"
-3. Click **Remove Access**
 
 ### Token Refresh
 
