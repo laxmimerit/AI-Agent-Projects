@@ -152,7 +152,11 @@ After configuring and restarting your AI application, you need to authenticate e
 **Windows:**
 ```powershell
 # Set environment variable (use your actual file path)
-set GOOGLE_OAUTH_CREDENTIALS=~/.gmail-mcp/gcp-oauth.keys.json
+#CMD
+set GOOGLE_OAUTH_CREDENTIALS="C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json"
+#Powershell
+$env:GOOGLE_OAUTH_CREDENTIALS="C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json"
+
 
 # Run authentication
 npx @cocal/google-calendar-mcp auth

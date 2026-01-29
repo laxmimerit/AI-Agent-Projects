@@ -8,27 +8,7 @@ import requests
 # -------------------------
 # MCP Config Loader
 # -------------------------
-def load_mcp_config(*server_names):
-    """Load MCP server configurations from mcp_config.json.
 
-    Args:
-        *server_names: Names of servers to load (e.g., 'airbnb', 'google-calendar', 'google-sheets')
-
-    Returns:
-        dict: Dictionary of MCP server configurations
-
-    Example:
-        config = load_mcp_config('airbnb', 'google-calendar')
-    """
-    config_path = os.path.join(os.path.dirname(__file__), 'mcp_config.json')
-
-    with open(config_path, 'r') as f:
-        all_configs = json.load(f)
-
-    if not server_names:
-        return all_configs
-
-    return {name: all_configs[name] for name in server_names if name in all_configs}
 
 
 # -------------------------
