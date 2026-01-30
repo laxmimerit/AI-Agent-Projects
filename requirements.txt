@@ -92,3 +92,5 @@ docling[vlm]
 fastembed
 fastembed-gpu
 e2b-code-interpreter
+yfinance
+fastmcp

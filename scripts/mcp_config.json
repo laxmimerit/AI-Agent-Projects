@@ -17,5 +17,12 @@
       "GOOGLE_OAUTH_CREDENTIALS": "C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json"
     },
     "transport": "stdio"
+  },
+  "yahoo-finance": {
+    "command": "uvx",
+    "args": [
+      "yahoo-finance-mcp-server"
+    ],
+    "transport": "stdio"
   }
 }

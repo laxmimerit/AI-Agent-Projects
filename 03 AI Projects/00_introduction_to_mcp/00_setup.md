@@ -87,6 +87,7 @@ You need to enable APIs for each Google service:
    - **Google Calendar API**
    - **Google Sheets API**
    - **Gmail API**
+   - **Google Drive**
 
 For each API:
 - Click on the API name
@@ -165,7 +166,7 @@ npx @cocal/google-calendar-mcp auth
 **macOS/Linux:**
 ```bash
 # Set environment variable (use your actual file path)
-export GOOGLE_OAUTH_CREDENTIALS="~/.gmail-mcp/gcp-oauth.keys.json"
+export GOOGLE_OAUTH_CREDENTIALS="C:\\Users\\laxmi\\.gmail-mcp\\gcp-oauth.keys.json"
 
 # Run authentication
 npx @cocal/google-calendar-mcp auth
