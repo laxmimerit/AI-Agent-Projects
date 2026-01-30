@@ -41,6 +41,7 @@ dependencies = [
     "langsmith>=0.6.1",
     "lxml>=6.0.2",
     "markitdown[all]>=0.1.4",
+    "matplotlib>=3.10.8",
     "nest-asyncio>=1.6.0",
     "nltk>=3.9.2",
     "numpy>=2.2.6",
