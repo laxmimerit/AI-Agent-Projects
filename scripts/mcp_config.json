@@ -31,5 +31,12 @@
       "command": "uvx",
       "args": ["yahoo-finance-mcp-server"],
       "transport": "stdio"
+    },
+    "gmail": {
+      "command": "npx",
+      "args": [
+        "@gongrzhe/server-gmail-autoauth-mcp"
+      ],
+      "transport": "stdio"
     }
 }
