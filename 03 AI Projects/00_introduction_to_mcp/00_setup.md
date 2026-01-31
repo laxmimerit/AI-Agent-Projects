@@ -86,8 +86,8 @@ You need to enable APIs for each Google service:
 2. Search and enable each of these APIs:
    - **Google Calendar API**
    - **Google Sheets API**
-   - **Gmail API**
    - **Google Drive**
+   - **Gmail API**
 
 For each API:
 - Click on the API name

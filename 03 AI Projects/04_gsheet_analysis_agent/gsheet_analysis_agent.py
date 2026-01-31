@@ -1,4 +1,5 @@
 """Google Sheets MCP Test and Analysis."""
+
 import sys
 import os
 
@@ -6,7 +7,6 @@ root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 sys.path.append(root_dir)
 
 from dotenv import load_dotenv
-
 load_dotenv()
 
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -23,44 +23,63 @@ import asyncio
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
 
-model = ChatGoogleGenerativeAI(model="gemini-3-flash-preview")
+# model = ChatGoogleGenerativeAI(model="gemini-3-flash-preview")
+model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
 checkpointer = InMemorySaver()
 
-async def get_sheets_tools():
-    """Load only Google Sheets MCP tools."""
-    mcp_config = utils.load_mcp_config('google-sheets', 'yahoo-finance')
+async def get_tools():
+    mcp_config = utils.load_mcp_config("google-sheets", "yahoo-finance")
+    # print("mcp config loaded:", mcp_config)
+
     client = MultiServerMCPClient(mcp_config)
 
     mcp_tools = await client.get_tools()
-    print(f"Loaded {len(mcp_tools)} tools\n")
+
+    tools = mcp_tools + [base_tools.web_search, base_tools.get_weather]
 
     # Filter tools that work with Gemini
-    problematic_tools = ['update_cells', 'batch_update_cells', 'get_multiple_sheet_data',
-                        'get_multiple_spreadsheet_summary', 'batch_update']
-
-    safe_tools = [tool for tool in mcp_tools if tool.name not in problematic_tools]
+    problematic_tools = ['update_cells']
     
+    safe_tools = [tool for tool in tools if tool.name not in problematic_tools]
+
+    print(f"Loaded {len(safe_tools)} Tools")
     print(f"Tools Available\n{[tool.name for tool in safe_tools]}")
 
     return safe_tools
 
-async def google_sheet_agent(query):
-    tools = await get_sheets_tools()
+async def google_sheet_agent(query, thread_id="default"):
+    tools = await get_tools()
 
-    agent = create_agent(model=model, tools=tools, system_prompt=prompts.GOOGLE_SHEETS_PROMPT)
+    agent = create_agent(model=model,
+                         tools=tools, 
+                         system_prompt=prompts.GOOGLE_SHEETS_PROMPT,
+                         checkpointer=checkpointer)
 
-    result = await agent.ainvoke({"messages": [HumanMessage(content=query)]})
+    config = {"configurable": {"thread_id": thread_id}}
+    result = await agent.ainvoke({'messages': [HumanMessage(query)]}, config=config)
 
-    # Extract final AI response
-    messages = result['messages']
-    ai_messages = [msg.text for msg in messages if isinstance(msg, AIMessage) and msg.text]
+    response = result['messages'][-1].text
 
-    response = ai_messages[-1] if ai_messages else "No response generated"
+    print("\n============== Output =============")
     print(response)
 
-    return response
+
+
+async def ask():
+    print("\nChat mode started. Type 'q' or 'quite' to exit.\n")
+    while True:
+        print("\n\n\nAsk Question. Type 'q' or 'quite' to exit.")
+        query = input("You: ").strip()
+
+        if query.lower() in ["q", "quite"]:
+            print("Exiting chat mode.")
+            break
+
+        await google_sheet_agent(query)
 
 if __name__ == "__main__":
-    query = "List all my Google Spreadsheets."
-    asyncio.run(google_sheet_agent(query))
+    # query = "list all my spreadsheets"
+    # asyncio.run(google_sheet_agent(query))
+
+    asyncio.run(ask())
