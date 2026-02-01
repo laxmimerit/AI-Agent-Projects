@@ -251,4 +251,7 @@ Airbnb MCP works immediately without authentication for public listing searches.
 - [Google Sheets MCP](https://github.com/xing5/mcp-google-sheets)
 - [Gmail MCP Server](https://github.com/GongRzhe/Gmail-MCP-Server)
 
+### Langchain Agent Chat UI Template
+Langchain Agent Server Template to Get Started with Agent and Chat UI
+- https://github.com/laxmimerit/langchain-agent-chat-ui-template
 ---
