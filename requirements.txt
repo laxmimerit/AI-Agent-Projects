@@ -95,3 +95,4 @@ e2b-code-interpreter
 yfinance
 fastmcp
 fastapi
+numba>=0.62.1
