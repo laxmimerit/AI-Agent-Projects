@@ -96,3 +96,6 @@ yfinance
 fastmcp
 fastapi
 numba>=0.62.1
+fpdf
+markdown2
+xhtml2pdf

@@ -1,6 +1,10 @@
 import streamlit as st
 import httpx
 import json
+import os
+from datetime import datetime
+import markdown2
+from xhtml2pdf import pisa
 
 BASE_URL = "http://localhost:8000"
 
@@ -10,6 +14,42 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 thread_id = st.sidebar.text_input("Thread ID", value="default")
+
+if st.sidebar.button("Clear Messages"):
+    st.session_state.messages = []
+    st.rerun()
+
+if st.sidebar.button("Download PDF"):
+    assistant_msgs = [m for m in st.session_state.messages if m["role"] == "assistant"]
+    if assistant_msgs:
+        last_msg = assistant_msgs[-1]
+        question_msgs = [m for m in st.session_state.messages if m["role"] == "user"]
+        question = question_msgs[-1]["content"] if question_msgs else "response"
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_question = "".join(c if c.isalnum() or c in " _-" else "" for c in question[:50]).strip()
+        filename = f"{timestamp}_{safe_question}.pdf"
+        downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+        filepath = os.path.join(downloads_dir, filename)
+
+        html = markdown2.markdown(
+            last_msg["content"],
+            extras=["tables", "fenced-code-blocks", "cuddled-lists"]
+        )
+        styled_html = f"""<html><head><meta charset="utf-8">
+        <style>
+            body {{ font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.6; padding: 20px; }}
+            h1 {{ font-size: 20px; }} h2 {{ font-size: 16px; }} h3 {{ font-size: 14px; }}
+            code {{ background: #f4f4f4; padding: 2px 4px; }}
+            pre {{ background: #f4f4f4; padding: 10px; }}
+            table {{ border-collapse: collapse; width: 100%; }}
+            th, td {{ border: 1px solid #ddd; padding: 6px; text-align: left; }}
+        </style></head><body>{html}</body></html>"""
+        with open(filepath, "wb") as f:
+            pisa.CreatePDF(styled_html, dest=f)
+        st.sidebar.success(f"Saved to {filename}")
+    else:
+        st.sidebar.warning("No assistant message to export")
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
