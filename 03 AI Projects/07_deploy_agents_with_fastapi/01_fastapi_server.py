@@ -1,27 +1,27 @@
-"""
-GenAI Server - FastAPI + LangChain Agent
-Author: Laxmi Kant (KGP Talkie)
-"""
+# fastapi dev .\01_fastapi_server.py
+import sys
+import os
 
-import warnings
-warnings.filterwarnings('ignore')
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(root_dir)
+# print(root_dir)
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
+load_dotenv()
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
+from langchain.messages import HumanMessage, AIMessage
 
-load_dotenv()
-
-# Pydantic Model
-class ChatRequest(BaseModel):
-    prompt: str = Field(..., min_length=1)
-
-# FastAPI App
 app = FastAPI()
+
+# Pydantic Data Model
+class ChatRequest(BaseModel):
+    prompt: str = Field(..., min_length=2)
+    model: str = 'gemini-2.5-flash'
 
 # CORS
 app.add_middleware(
@@ -31,29 +31,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize model
-model = ChatGoogleGenerativeAI(model='gemini-3-flash-preview')
-
-# Create the agent
-agent = create_agent(
-    model=model,
-)
-
 @app.get("/")
-async def root():
-    return {"message": "GenAI API is running"}
+async def read_root():
+    return {"Hello": "Laxmi kant"}
+
+
+@app.get("/items/{item_id}")
+async def read_item(item_id: int, q: str | None = None):
+    return {"item_id": item_id, "q": q}
+
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     if not request.prompt.strip():
-        raise HTTPException(status_code=400, detail="Empty prompt")
+        raise HTTPException(status_code=400, detail="Empty prompt!")
     
     try:
-        response = agent.invoke({"input": request.prompt})
-        return {"response": response}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Server Error")
+        model = ChatGoogleGenerativeAI(model=request.model)
+        agent = create_agent(model=model)
+        response = agent.invoke({'messages': [HumanMessage(request.prompt)]})
 
-if __name__ == "__main__":
+        return {'response': response['messages'][-1].text}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Server error: {e}")
+
+
+if __name__=="__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app=app, host='0.0.0.0', port=8001)
