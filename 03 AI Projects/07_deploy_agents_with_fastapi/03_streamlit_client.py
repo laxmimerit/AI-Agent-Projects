@@ -6,7 +6,7 @@ from datetime import datetime
 import markdown2
 from xhtml2pdf import pisa
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8002"
 
 st.title("Personal Assistant")
 
@@ -66,7 +66,7 @@ if query := st.chat_input("Ask anything..."):
         full_response = ""
 
         with httpx.Client(timeout=None) as client:
-            with client.stream("POST", f"{BASE_URL}/stream", json={"query": query, "thread_id": thread_id}) as response:
+            with client.stream("POST", f"{BASE_URL}/chat_stream", json={"query": query, "thread_id": thread_id}) as response:
                 for line in response.iter_lines():
                     if not line.strip():
                         continue
