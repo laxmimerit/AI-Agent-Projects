@@ -80,7 +80,8 @@ if query := st.chat_input("Ask anything..."):
                                 st.status(f"🔧 {tc['name']}", state="complete").write(f"```json\n{json.dumps(tc['args'], indent=2)}\n```")
 
                     if content and "AI" in msg_type:
-                        full_response = content
+                        # full_response = content
+                        full_response += content
                         placeholder.markdown(full_response.replace("$", "\\$") + "▌")
 
         placeholder.markdown(full_response.replace("$", "\\$"))

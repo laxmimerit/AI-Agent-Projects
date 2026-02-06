@@ -71,25 +71,34 @@ async def get_tools():
 
 
 
+from langchain_core.messages import HumanMessage, AIMessageChunk
+
 async def stream_response(query: str, model_name: str = 'gemini-2.5-flash', thread_id: str = "default"):
+    # Initialize model and agent
     model = ChatGoogleGenerativeAI(model=model_name)
     agent = create_agent(model=model, tools=tools, system_prompt=system_prompt, checkpointer=checkpointer)
 
+    # Configuration with thread ID for conversation memory
     config = {"configurable": {"thread_id": thread_id}}
-    async for chunk in agent.astream(
-        {"messages": [HumanMessage(query)]},
-        stream_mode="values",
+    
+    # Stream tokens in real-time
+    async for token, metadata in agent.astream(
+        {"messages": [HumanMessage(content=query)]},
+        stream_mode="messages",
         config=config,
     ):
-        if "messages" in chunk and chunk["messages"]:
-            msg = chunk["messages"][-1]
-            data = {
-                "type": msg.__class__.__name__,
-                "content": msg.text,
-            }
-            if hasattr(msg, 'tool_calls') and msg.tool_calls:
-                data["tool_calls"] = msg.tool_calls
-            yield (json.dumps(data) + "\n").encode()
+        # Create response data
+        data = {
+            "type": token.__class__.__name__,
+            "content": token.text,
+        }
+        
+        # Add tool calls if available (only for AIMessageChunk)
+        if isinstance(token, AIMessageChunk) and token.tool_calls:
+            data["tool_calls"] = token.tool_calls
+        
+        # Send JSON response
+        yield (json.dumps(data) + "\n").encode()
 
 
 @app.post("/stream")
