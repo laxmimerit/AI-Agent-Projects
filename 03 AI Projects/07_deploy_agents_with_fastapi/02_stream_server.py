@@ -4,15 +4,17 @@ import os
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
-# print(root_dir)
+print(root_dir)
+
+from dotenv import load_dotenv
+load_dotenv()
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from dotenv import load_dotenv
-load_dotenv()
+
 import json
 
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -27,8 +29,18 @@ checkpointer = InMemorySaver()
 tools = None
 system_prompt = None
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global tools, system_prompt
+    tools = await get_tools()
+    system_prompt = prompts.get_daily_briefing_prompt()
+    print("Tools loaded, ready to create agents")
+    yield
 
 app = FastAPI(lifespan=lifespan)
+
+# print(os.getenv("OLLAMA_API_KEY"))
+# print(base_tools.web_search.invoke("news"))
 
 # CORS
 app.add_middleware(
@@ -58,13 +70,6 @@ async def get_tools():
     return safe_tools
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global tools, system_prompt
-    tools = await get_tools()
-    system_prompt = prompts.get_daily_briefing_prompt()
-    print("Tools loaded, ready to create agents")
-    yield
 
 async def stream_response(query: str, model_name: str = 'gemini-2.5-flash', thread_id: str = "default"):
     model = ChatGoogleGenerativeAI(model=model_name)
