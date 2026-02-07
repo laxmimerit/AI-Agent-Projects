@@ -38,15 +38,15 @@ python 02_stream_server.py
 **Test with curl:**
 ```bash
 # Health check
-curl http://localhost:8000/health
+curl http://localhost:8000
 
 # Stream request
-curl -X POST http://localhost:8000/stream \
+curl -X POST http://localhost:8000/chat_stream \
   -H "Content-Type: application/json" \
   -d '{"query": "What is the weather in London?"}'
 
 # Stream with thread_id for memory
-curl -X POST http://localhost:8000/stream \
+curl -X POST http://localhost:8000/chat_stream \
   -H "Content-Type: application/json" \
   -d '{"query": "What is the weather in London?", "thread_id": "user-123"}'
 ```
