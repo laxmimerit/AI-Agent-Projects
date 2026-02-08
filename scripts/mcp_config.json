@@ -38,5 +38,24 @@
         "@gongrzhe/server-gmail-autoauth-mcp"
       ],
       "transport": "stdio"
+    },
+    "tidb_ecommerce": {
+      "command": "npx",
+      "args": [
+        "-y", "@benborla29/mcp-server-mysql"
+      ],
+      "env": {
+        "MYSQL_HOST": "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+        "MYSQL_PORT": "4000",
+        "MYSQL_USER": "qztwAJyTfeLyKNw.root",
+        "MYSQL_PASS": "aOVg7auQbCUPXXuq",
+        "MYSQL_DB": "ecommerce",
+        "ALLOW_INSERT_OPERATION": "false",
+        "ALLOW_UPDATE_OPERATION": "false",
+        "ALLOW_DELETE_OPERATION": "false",
+        "MYSQL_SSL": "true",
+        "MYSQL_DISABLE_READ_ONLY_TRANSACTIONS": "true"
+      },
+      "transport": "stdio"
     }
 }
