@@ -1,40 +1,29 @@
 # Core dependencies
 python-dotenv
 pydantic
-typing-extensions
 
 # LangChain ecosystem
 langchain
 langchain-community
 langchain-core
-langchain-huggingface
 langchain-ollama
 langchain-openai
 langgraph
 langsmith
 langchain-google-genai
-langchain-google-vertexai
-langchain_qdrant
+langchain_mcp_adapters
 
-# DeepAgents
-deepagents
+# LangGraph checkpointing
+langgraph-checkpoint-sqlite
+langgraph-checkpoint-postgres
 
 # Document processing
 pymupdf
-pypdf2
-unstructured
-openpyxl
-python-pptx
-python-magic
-docx2txt
+pymupdf4llm
 markitdown[all]
 docutils
-xmltodict
 
-# Vector stores & embeddings
-faiss-cpu
-
-# NLP & ML
+# NLP
 nltk
 numpy
 tiktoken
@@ -42,60 +31,31 @@ tiktoken
 # API clients
 ollama
 openai
-tavily-python
 google-genai
+tavily-python
+ddgs
 
-# Web scraping & searching
+# Web scraping
 beautifulsoup4
 lxml
-selenium
-duckduckgo-search
-ddgs
-wikipedia
 
 # Database
 pymysql
+psycopg
+psycopg-binary
 
 # Web framework
 streamlit
-
-# Utilities
-huggingface-hub
-transformers
-tokenizers
-datasets
-evaluate
-accelerate
-torch
-torchvision
-ipywidgets
-jupyter
+fastapi
 
 # Media processing
-pytube
 youtube-transcript-api
 
 # Additional tools
-email-validator
 textblob
-pymupdf4llm
-langgraph-checkpoint-sqlite
-langgraph-checkpoint-postgres
-psycopg
-psycopg-binary
-rank_bm25
-sentence_transformers
-hf_xet
-langchain_mcp_adapters
+markdown2
+xhtml2pdf
 nest_asyncio
-docling[vlm]
-fastembed
-fastembed-gpu
 e2b-code-interpreter
 yfinance
 fastmcp
-fastapi
-numba>=0.62.1
-fpdf
-markdown2
-xhtml2pdf
